@@ -1,0 +1,198 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color palette for Energy Guardians cyberpunk-nature fusion theme */
+  --background: oklch(1 0 0); /* Pure white for clean modern look */
+  --foreground: oklch(0.35 0 0); /* Dark gray text for readability */
+  --card: oklch(0.98 0.02 142); /* Soft green card backgrounds */
+  --card-foreground: oklch(0.35 0 0); /* Dark text on cards */
+  --popover: oklch(1 0 0); /* White popovers */
+  --popover-foreground: oklch(0.35 0 0); /* Dark popover text */
+  --primary: oklch(0.45 0.15 142); /* Energy Guardian green (#059669) */
+  --primary-foreground: oklch(1 0 0); /* White text on primary */
+  --secondary: oklch(0.65 0.15 142); /* Vibrant secondary green (#10b981) */
+  --secondary-foreground: oklch(1 0 0); /* White text on secondary */
+  --muted: oklch(0.96 0.01 142); /* Very light green muted */
+  --muted-foreground: oklch(0.55 0 0); /* Medium gray muted text */
+  --accent: oklch(0.7 0.15 100); /* Bright lime accent (#84cc16) */
+  --accent-foreground: oklch(1 0 0); /* White text on accent */
+  --destructive: oklch(0.55 0.25 25); /* Warning red */
+  --destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --border: oklch(0.9 0 0); /* Light gray borders */
+  --input: oklch(0.99 0.01 142); /* Very light green inputs */
+  --ring: oklch(0.45 0.15 142 / 0.5); /* Green focus ring */
+
+  /* Energy Guardians specific color tokens */
+  --energy-creature: oklch(0.7 0.2 120); /* Bright creature green */
+  --carbon-credit: oklch(0.6 0.15 85); /* Golden carbon credit color */
+  --neighborhood-map: oklch(0.8 0.1 142); /* Map background green */
+  --ar-highlight: oklch(0.75 0.25 300); /* Cyberpunk purple for AR elements */
+  --quest-active: oklch(0.65 0.2 50); /* Orange for active quests */
+
+  --chart-1: oklch(0.45 0.15 142); /* Primary green */
+  --chart-2: oklch(0.7 0.15 100); /* Bright lime */
+  --chart-3: oklch(0.65 0.2 50); /* Orange */
+  --chart-4: oklch(0.6 0.15 85); /* Golden yellow */
+  --chart-5: oklch(0.75 0.25 300); /* Cyberpunk purple */
+
+  --radius: 0.75rem; /* Increased radius for modern feel */
+  --sidebar: oklch(0.98 0.02 142);
+  --sidebar-foreground: oklch(0.35 0 0);
+  --sidebar-primary: oklch(0.45 0.15 142);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.7 0.15 100);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.9 0 0);
+  --sidebar-ring: oklch(0.45 0.15 142 / 0.5);
+}
+
+.dark {
+  /* Enhanced dark mode for cyberpunk aesthetic */
+  --background: oklch(0.08 0 0); /* Deep black background */
+  --foreground: oklch(0.95 0.02 142); /* Bright green-tinted white */
+  --card: oklch(0.12 0.05 142); /* Dark green cards */
+  --card-foreground: oklch(0.95 0.02 142); /* Bright text on cards */
+  --popover: oklch(0.08 0 0); /* Dark popovers */
+  --popover-foreground: oklch(0.95 0.02 142); /* Bright popover text */
+  --primary: oklch(0.7 0.2 142); /* Bright energy green */
+  --primary-foreground: oklch(0.08 0 0); /* Dark text on primary */
+  --secondary: oklch(0.6 0.15 142); /* Medium energy green */
+  --secondary-foreground: oklch(0.95 0.02 142); /* Bright text on secondary */
+  --muted: oklch(0.15 0.05 142); /* Dark muted green */
+  --muted-foreground: oklch(0.7 0.05 142); /* Medium green muted text */
+  --accent: oklch(0.8 0.25 100); /* Bright lime accent */
+  --accent-foreground: oklch(0.08 0 0); /* Dark text on accent */
+  --destructive: oklch(0.6 0.25 25); /* Bright warning red */
+  --destructive-foreground: oklch(0.95 0.02 142); /* Bright text on destructive */
+  --border: oklch(0.2 0.05 142); /* Dark green borders */
+  --input: oklch(0.12 0.05 142); /* Dark green inputs */
+  --ring: oklch(0.7 0.2 142 / 0.5); /* Bright green focus ring */
+
+  /* Dark mode Energy Guardians colors */
+  --energy-creature: oklch(0.8 0.25 120); /* Glowing creature green */
+  --carbon-credit: oklch(0.75 0.2 85); /* Bright golden credits */
+  --neighborhood-map: oklch(0.15 0.1 142); /* Dark map background */
+  --ar-highlight: oklch(0.85 0.3 300); /* Bright cyberpunk purple */
+  --quest-active: oklch(0.75 0.25 50); /* Bright orange quests */
+
+  --chart-1: oklch(0.7 0.2 142); /* Bright primary green */
+  --chart-2: oklch(0.8 0.25 100); /* Glowing lime */
+  --chart-3: oklch(0.75 0.25 50); /* Bright orange */
+  --chart-4: oklch(0.75 0.2 85); /* Bright golden */
+  --chart-5: oklch(0.85 0.3 300); /* Glowing purple */
+}
+
+/* Added Energy Guardians custom animations */
+@keyframes pulse-energy {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float-creature {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow-ar {
+  0%,
+  100% {
+    box-shadow: 0 0 5px var(--ar-highlight);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--ar-highlight), 0 0 30px var(--ar-highlight);
+  }
+}
+
+@keyframes grow-tree {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-pulse-energy {
+  animation: pulse-energy 2s ease-in-out infinite;
+}
+.animate-float-creature {
+  animation: float-creature 3s ease-in-out infinite;
+}
+.animate-glow-ar {
+  animation: glow-ar 2s ease-in-out infinite;
+}
+.animate-grow-tree {
+  animation: grow-tree 1s ease-out;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Added Energy Guardians custom color tokens */
+  --color-energy-creature: var(--energy-creature);
+  --color-carbon-credit: var(--carbon-credit);
+  --color-neighborhood-map: var(--neighborhood-map);
+  --color-ar-highlight: var(--ar-highlight);
+  --color-quest-active: var(--quest-active);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
