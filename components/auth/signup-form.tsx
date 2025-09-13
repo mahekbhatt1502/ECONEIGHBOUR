@@ -1,18 +1,12 @@
 "use client";
-
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-// Removed: import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-// Import GeoPoint along with other firestore functions
-import { doc, setDoc, GeoPoint } from "firebase/firestore";
-// Corrected the import path to be relative
-import { auth, db } from "@/components/auth/firebase"; // Import auth and db directly
+import supabase from "./supabase";
 
 export function SignupForm() {
   const [formData, setFormData] = useState({
@@ -21,10 +15,8 @@ export function SignupForm() {
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
-    allowLocation: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  // Removed: const router = useRouter();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,81 +43,60 @@ export function SignupForm() {
       return;
     }
 
-    let locationData: { latitude: number; longitude: number } | null = null;
-    if (formData.allowLocation && navigator.geolocation) {
-      locationData = await new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const loc = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-            localStorage.setItem("userLocation", JSON.stringify(loc));
-            resolve(loc);
-          },
-          (error) => {
-            console.log("Location access denied:", error);
-            toast({
-              title: "Warning",
-              description: "Location access was denied. Some features may be limited.",
-              variant: "destructive",
-            });
-            resolve(null);
-          },
-        );
-      });
-    }
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const user = userCredential.user;
-
-      // Convert the plain location object to a Firestore GeoPoint
-      const firestoreLocation = locationData
-        ? new GeoPoint(locationData.latitude, locationData.longitude)
-        : null;
-
-      // Use the correct 'firestoreLocation' variable for Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        name: formData.name,
-        email: user.email,
-        createdAt: new Date().toISOString(),
-        hasLocation: formData.allowLocation,
-        ...(firestoreLocation && { location: firestoreLocation }),
+      // Sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
       });
 
-      // Construct the 'userData' object more explicitly for localStorage
-      const userData: any = {
-        name: formData.name,
-        email: user.email,
-        isAuthenticated: true,
-        hasLocation: formData.allowLocation,
-      };
-      
-      if (locationData) {
-        userData.location = locationData;
+      if (error) {
+        let errorMessage = "Failed to create account. Please try again.";
+        if (error.message.includes("already registered")) {
+          errorMessage = "This email is already registered.";
+        } else if (error.message.includes("Password should be at least")) {
+          errorMessage = "Password must be at least 6 characters.";
+        }
+        throw new Error(errorMessage);
       }
-      
-      localStorage.setItem("user", JSON.stringify(userData));
 
-      toast({
-        title: "Welcome to EcoTracker!",
-        description: "Your account has been created successfully.",
-      });
-      
-      // Replaced router.push with standard window navigation
-      window.location.href = "/dashboard";
+      if (data.user) {
+        const { error: dbError } = await supabase.from("SignUp").insert({
+          users: data.user.id,  // auth user ID
+          Name: formData.name,
+          Email: formData.email,
+          Password: formData.password,
+        });
 
+        if (dbError) {
+          throw new Error("Failed to save user data: " + dbError.message);
+        }
+
+        // Save in localStorage
+        const userData = {
+          Name: formData.name,
+          Email: formData.email,
+          isAuthenticated: true,
+        };
+
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        toast({
+          title: "Welcome to EcoTracker!",
+          description: "Your account has been created successfully.",
+        });
+
+        window.location.href = "/dashboard";
+      }
     } catch (error: any) {
-      let errorMessage = "Failed to create account. Please try again.";
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = "This email is already registered.";
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = "Password must be at least 6 characters.";
-      }
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error.message,
         variant: "destructive",
       });
     } finally {
@@ -180,27 +151,15 @@ export function SignupForm() {
         />
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="location"
-            checked={formData.allowLocation}
-            onCheckedChange={(checked) => setFormData({ ...formData, allowLocation: checked as boolean })}
-          />
-          <Label htmlFor="location" className="text-sm">
-            Allow location access to find nearby eco-friends
-          </Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="terms"
-            checked={formData.agreeToTerms}
-            onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
-          />
-          <Label htmlFor="terms" className="text-sm">
-            I agree to the terms and conditions
-          </Label>
-        </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="terms"
+          checked={formData.agreeToTerms}
+          onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
+        />
+        <Label htmlFor="terms" className="text-sm">
+          I agree to the terms and conditions
+        </Label>
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
@@ -209,4 +168,3 @@ export function SignupForm() {
     </form>
   );
 }
-
